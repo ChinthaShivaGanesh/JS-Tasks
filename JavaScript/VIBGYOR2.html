@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VIBGYOR Buttons</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 40px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    #btn-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .color-btn {
+      padding: 2% 3%;
+      margin: 2%;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      border-radius: 30px;
+      border: 2px solid black;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .color-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+  <h2>🌈 VIBGYOR BUTTONS</h2>
+  <div id="btn-container"></div>
+
+  <script>
+    const vibgyor = [
+      { name: "Violet", hex: "#8F00FF" },
+      { name: "Indigo", hex: "#4B0082" },
+      { name: "Blue", hex: "#0000FF" },
+      { name: "Green", hex: "#00FF00" },
+      { name: "Yellow", hex: "#FFFF00" },
+      { name: "Orange", hex: "#FFA500" },
+      { name: "Red", hex: "#FF0000" },
+    ];
+
+    const container = document.getElementById("btn-container");
+
+    vibgyor.forEach(color => {
+      const btn = document.createElement("button");
+      btn.className = "color-btn";
+      btn.textContent = color.name;
+      btn.style.backgroundColor = color.hex;
+      if (color.textColor) {
+        btn.style.color = color.textColor;
+      }
+
+      btn.addEventListener("click", () => {
+        document.body.style.backgroundColor = color.hex;
+      });
+
+      container.appendChild(btn);
+    });
+  </script>
+</body>
+</html>

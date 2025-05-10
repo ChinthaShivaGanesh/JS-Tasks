@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Javascript Daily Tasks</title>
+</head>
+<body>
+    <!-- Day-1 -->
+     Day-1 : Introduction
+    <pre><strong>
+    This is My First Js Program
+
+        Intialization = Declaration + Assigning
+
+        var a = 10 ;
+        a = a + 20 + 30;
+        console.log(a, "Output of a")
+            
+    </strong></pre>    
+
+    <!-- Day-2 -->
+    Day-2 : Task-1
+    <br>
+    <pre><strong>
+    console.log([] == []) 
+    console.log([] === []) 
+    console.log({} == {}) 
+    console.log({} === {}) 
+    console.log(true == true) 
+    console.log(true === true) 
+    console.log(false == false) 
+    console.log(false === false) 
+    console.log(undefined == undefined) 
+    console.log(undefined === undefined) 
+    console.log(undefined == "undefined") 
+    console.log(undefined === "undefined") 
+    console.log(null === null) 
+    console.log(null == undefined) 
+    console.log([1,2,3] === [1,2,3]) 
+    console.log([1,2,3] == [1,2,3]) 
+    console.log({id:1} == {id:1})   
+    </strong></pre>
+
+    <!-- Day-3 -->
+     Day-3 : Operators
+     <br>
+     <pre><strong>
+     Types Of Operators :
+
+     1) Arithematic Operators (+,-,/,*,%)
+     2) Assignment Operators (=, +=, -=, /=, *=)
+     3) Comparsion Operators (Checks 2 Conditions or Values or Operators)
+        (==, ===, >, <, <=, >=, !=, !==)
+         
+        Here !== : Strictly Not Equal To
+             === : Strictly Equal To 
+
+    ---> When You use " == " Javascript Engine Checks Only Value
+    ---> When You use " === " Javascript Engine Checks Value & Data Type
+
+    4) Ternary Operator
+       Syntax : expression/condition ? " " : " "
+                true/false ? true : false
+
+    ---> True Values Can Be Seen after "?" question mark
+    ---> False Values Can Be Seen after ":" Colons
+    
+    5) Logical Operators (&&, ||, !)
+       A) Logical AND (&&) :
+       B) Logical OR  (||) :
+       C) Logical NOT (!)  :It Makes True Values Into False & False Values Into True
+       
+    6) Nested - Ternary Operator :
+       Syntax : (Condition1 ? Value :) ? (Condition2 ? Value :) ? (Condition3 ? Value :) ? (Condition4 ? Value :) : default value
+       
+    ---> JS Engine Can't Read Multiple ALert That's Why We Use Parenthesis While We Check Multiple Conditions
+     </strong></pre>
+
+    <!-- Day-4 -->
+    Day-4 : Variables & Types
+    <br>
+    <pre><strong>
+        Variable : it Is Used To Stores Values Or data
+
+        Types :
+        1) var : We Can Do Re-Declaration, Re-Initialization & Re-Assigning. It is a Functional & Local Scope
+
+        Ex-1)   var a = 10;
+                    a = 20; Re-Assigning
+                    a = "Vamsi"; Re-Assigning
+                var a = 6000; Re-Initialization
+                var a;
+
+           2)   var num = 50;
+                function print()
+                {
+                  var square = num*num;
+                  console.log(square);
+                }
+                console.log(num);
+                print()
+
+            Output : 50
+                     2500 
+            
+        2) let : We Can Re-Assign, But We Make Re-Declaration & Re-Initialization
+           
+        Ex-1)   let = "Vamsi"
+                 let name;
+                     name = "Ravi"
+                 let name = "Rahul"
+                 console.log(name) 
+
+           2)   if(true)
+                {
+                    let x = 10;
+                    console.log(x);
+                }     
+                console.log(x); //Illegal
+            
+            Output : Reference Error : x is not defined    
+
+        3) const : We Can't Make Re-Declaration, Re-Initialization & Re-Assigning And We Have To Initialize At The Time Of Declaration (Here We Can Make Only Single Time Operations)
+            Ex : const person = {name:"aki"}
+                 person.name = "Vinay";
+                 console.log(person.name)
+
+            Output : Vinay    
+            
+            
+        </strong></pre>    
+    <!-- Day-8 -->    
+
+    <script src="./index.js"></script>
+</body>
+</html>
