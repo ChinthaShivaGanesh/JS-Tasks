@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Day Planner</title>
+  <style>
+    /* ---------- Global Styles ---------- */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: 0.3s;
+    }
+
+    :root {
+      --bg: #f9fafb;
+      --text: #333;
+      --card: #fff;
+      --primary: #4a90e2;
+      --accent: #6c63ff;
+    }
+    body.dark {
+      --bg: #181818;
+      --text: #f5f5f5;
+      --card: #242424;
+      --primary: #17a2b8;
+      --accent: #9b59b6;
+    }
+
+    header {
+      padding: 1rem;
+      text-align: center;
+      background: var(--primary);
+      color: white;
+      font-size: 1.7rem;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    button {
+      background: var(--primary);
+      border: none;
+      padding: 0.6rem 1rem;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover { opacity: 0.85; }
+
+    input, select, textarea {
+      padding: 0.6rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 0.9rem;
+      flex: 1;
+    }
+
+    .task-form {
+      background: var(--card);
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      display: grid;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+    }
+    .task-form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+
+    .task-list {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .task {
+      background: var(--card);
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .task.completed { text-decoration: line-through; opacity: 0.7; }
+
+    .task-info {
+      max-width: 70%;
+    }
+
+    .task-actions button {
+      margin-left: 0.3rem;
+      font-size: 0.9rem;
+    }
+
+    .badge {
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      color: white;
+      margin-left: 0.4rem;
+    }
+    .high { background: #e74c3c; }
+    .medium { background: #f39c12; }
+    .low { background: #27ae60; }
+
+    .calendar {
+      font-weight: bold;
+    }
+
+    .progress-container {
+      background: #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    .progress-bar {
+      height: 12px;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    .summary {
+      background: var(--card);
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    @media (max-width: 700px) {
+      .task-info { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header>🗓️ Smart Day Planner</header>
+  <div class="container">
+    <div class="controls">
+      <div class="calendar">
+        <button onclick="changeDate(-1)">⬅️</button>
+        <span id="current-date"></span>
+        <button onclick="changeDate(1)">➡️</button>
+      </div>
+      <input type="text" id="search" placeholder="🔍 Search tasks...">
+      <button onclick="toggleTheme()">🌗</button>
+    </div>
+
+    <div class="summary">
+      <h3>📌 Today’s Overview</h3>
+      <p id="overview"></p>
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <form class="task-form" onsubmit="addTask(event)">
+      <div class="task-form-row">
+        <input type="text" id="task-input" placeholder="Task Title" required>
+        <input type="time" id="time-input" required>
+      </div>
+      <div class="task-form-row">
+        <select id="category-input">
+          <option value="Work">Work</option>
+          <option value="Personal">Personal</option>
+          <option value="Study">Study</option>
+          <option value="Shopping">Shopping</option>
+        </select>
+        <select id="priority-input">
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+      </div>
+      <textarea id="note-input" placeholder="Additional Notes (optional)"></textarea>
+      <button type="submit">Add Task ➕</button>
+    </form>
+
+    <div class="task-list" id="task-list"></div>
+  </div>
+
+  <script>
+    // -------- Variables --------
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || {};
+    let currentDate = new Date();
+
+    function formatDate(date) {
+      return date.toISOString().split("T")[0];
+    }
+
+    function renderDate() {
+      document.getElementById("current-date").textContent =
+        currentDate.toDateString();
+      renderTasks();
+    }
+
+    function changeDate(offset) {
+      currentDate.setDate(currentDate.getDate() + offset);
+      renderDate();
+    }
+
+    // -------- Task Management --------
+    function addTask(e) {
+      e.preventDefault();
+      const title = document.getElementById("task-input").value;
+      const time = document.getElementById("time-input").value;
+      const category = document.getElementById("category-input").value;
+      const priority = document.getElementById("priority-input").value;
+      const note = document.getElementById("note-input").value;
+
+      const task = {
+        id: Date.now(),
+        title, time, category, priority, note,
+        completed: false
+      };
+
+      const dateKey = formatDate(currentDate);
+      if (!tasks[dateKey]) tasks[dateKey] = [];
+      tasks[dateKey].push(task);
+
+      saveTasks();
+      renderTasks();
+
+      e.target.reset();
+    }
+
+    function renderTasks() {
+      const list = document.getElementById("task-list");
+      list.innerHTML = "";
+      const dateKey = formatDate(currentDate);
+      const searchValue = document.getElementById("search").value.toLowerCase();
+      const dayTasks = tasks[dateKey] || [];
+
+      let completedCount = 0;
+
+      dayTasks
+        .filter(t => t.title.toLowerCase().includes(searchValue))
+        .sort((a, b) => a.time.localeCompare(b.time))
+        .forEach(task => {
+          if (task.completed) completedCount++;
+
+          const taskDiv = document.createElement("div");
+          taskDiv.className = "task" + (task.completed ? " completed" : "");
+
+          taskDiv.innerHTML = `
+            <div class="task-info">
+              <h4>${task.title} <span class="badge ${task.priority.toLowerCase()}">${task.priority}</span></h4>
+              <p>🕒 ${task.time} | 📂 ${task.category}</p>
+              ${task.note ? `<p>📝 ${task.note}</p>` : ""}
+            </div>
+            <div class="task-actions">
+              <button onclick="toggleComplete('${dateKey}', ${task.id})">✔️</button>
+              <button onclick="editTask('${dateKey}', ${task.id})">✏️</button>
+              <button onclick="deleteTask('${dateKey}', ${task.id})">🗑️</button>
+            </div>
+          `;
+          list.appendChild(taskDiv);
+        });
+
+      // Update Overview + Progress
+      document.getElementById("overview").textContent =
+        `Total: ${dayTasks.length} | Completed: ${completedCount} | Pending: ${dayTasks.length - completedCount}`;
+
+      const progress = dayTasks.length ? (completedCount / dayTasks.length) * 100 : 0;
+      document.getElementById("progress-bar").style.width = progress + "%";
+    }
+
+    function toggleComplete(dateKey, id) {
+      const task = tasks[dateKey].find(t => t.id === id);
+      task.completed = !task.completed;
+      saveTasks();
+      renderTasks();
+    }
+
+    function editTask(dateKey, id) {
+      const task = tasks[dateKey].find(t => t.id === id);
+      const newTitle = prompt("Edit Task Title:", task.title);
+      if (newTitle) {
+        task.title = newTitle;
+        saveTasks();
+        renderTasks();
+      }
+    }
+
+    function deleteTask(dateKey, id) {
+      tasks[dateKey] = tasks[dateKey].filter(t => t.id !== id);
+      saveTasks();
+      renderTasks();
+    }
+
+    // -------- Theme Toggle --------
+    function toggleTheme() {
+      document.body.classList.toggle("dark");
+    }
+
+    // -------- Storage --------
+    function saveTasks() {
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    document.getElementById("search").addEventListener("input", renderTasks);
+
+    // Init
+    renderDate();
+  </script>
+</body>
+</html>
